@@ -12,9 +12,8 @@ import {
 } from "react-icons/fa";
 import Image from "next/image";
 import { FaBackward } from "react-icons/fa6";
-
 const token =
-  "BQC75OAOw-zaj0_dav_raPrPYOOksF3Fw1L6FqS_BQpH_gkMTU7AiryvkmoGUKjRsQIXRWQMYoONyFMk3dl5vwb9yTL7JWH_vzCMfEk4ZTa5JU3EEZQWX9OmHRVeU6OcTwUh9u1TFEtTW4z8zkH6KWGKoVc108axFWBLEtuEaLkrh2iodLFVI3zjxGgx4Wj8uRyf9LLcrYRaMi57OQa6Ng8Bb3_qvz24anQDhdzVhfERFsgbiqSImhfxtiaXJw2idskZRq0zVzPkfy7NIA86tbpz";
+  "BQBjG-SwiUEf9ySiYe-K-OAxC0iqo-U5x2ArigX2okQX6uLxqCd8wYIlowUEpK3KjG0zsW_uVlWquCzey265ub-k0J9WZ0yoTAmz-j2sMCSK1atcQv9SEKrE4gNNA-RGfnGTwlyili8mt6kuKIi750k9B0jae2B4HO_dtJqOatMX6RZvqBwPhsRfUiySViroZpUpccUCqtN5WjjQvWV4eKew8_Qyy3yfmyHQ-Du82PJLjWIuylB1I8UbfMh8_cMfZWgETi0Gz-BNfrqOL6AxddPK";
 
 async function fetchWebApi(endpoint: string, method: string, body?: any) {
   const res = await fetch(`https://api.spotify.com/${endpoint}`, {
@@ -26,13 +25,12 @@ async function fetchWebApi(endpoint: string, method: string, body?: any) {
   });
   return await res.json();
 }
-
 const topTracksIds = [
   "0kbBU3ey5IkKwPvDHXJOry",
-  "4E23uX1BDdUTk9x56nEbla",
-  "5m5THqRa6jHwKYLMWp2DEW",
   "5XtsfMFmpM401S6dbVaOQw",
   "75zXJyX1NLzmN2WUUjfQsy",
+  "5m5THqRa6jHwKYLMWp2DEW",
+  "4E23uX1BDdUTk9x56nEbla",
 ];
 
 async function getRecommendations() {
@@ -43,49 +41,44 @@ async function getRecommendations() {
     )
   ).tracks;
 }
-
 const TopTenPlayer = () => {
   const [recommendedTracks, setRecommendedTracks] = useState([]);
   const [selectedTrackIndex, setSelectedTrackIndex] = useState(0);
-  const [showControls, setShowControls] = useState(false);
+
   useEffect(() => {
     const fetchRecommendations = async () => {
       const tracks = await getRecommendations();
       setRecommendedTracks(tracks);
     };
-
     fetchRecommendations();
   }, []);
-
+  const truncateText = (text: string) => {
+    return text.length > 14 ? text.slice(0, 13) + "..." : text;
+  };
   const handleTrackEnded = () => {
-    // Play the next track when the current track ends
     setSelectedTrackIndex((prevIndex) =>
       prevIndex < recommendedTracks.length - 1 ? prevIndex + 1 : 0
     );
   };
-
   const handleTrackClick = (index) => {
     setSelectedTrackIndex(index);
   };
-  const handlePrevTrack = () => {
-    // Play the previous track
-    setSelectedTrackIndex((prevIndex) =>
-      prevIndex > 0 ? prevIndex - 1 : recommendedTracks.length - 1
-    );
-  };
-
-  const handleNextTrack = () => {
-    // Play the next track
-    setSelectedTrackIndex((prevIndex) =>
-      prevIndex < recommendedTracks.length - 1 ? prevIndex + 1 : 0
-    );
-  };
+  // const handlePrevTrack = () => {
+  //   setSelectedTrackIndex((prevIndex) =>
+  //     prevIndex > 0 ? prevIndex - 1 : recommendedTracks.length - 1
+  //   );
+  // };
+  // const handleNextTrack = () => {
+  //   setSelectedTrackIndex((prevIndex) =>
+  //     prevIndex < recommendedTracks.length - 1 ? prevIndex + 1 : 0
+  //   );
+  // };
   const selectedTrack = recommendedTracks[selectedTrackIndex];
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4 text-white bg-black p-3">
-        Top 10 Song Player
+        Top 5 Song Player
       </h1>
       <div className=" justify-between lg:flex">
         <ul>
@@ -137,12 +130,14 @@ const TopTenPlayer = () => {
                         <div className="flex w-[85%] overflow-hidden h-full items-end">
                           <div className="text-[14px] w-full px-8 pb-2 over flex flex-col gap-3">
                             <h2 className="text-end min-w-max overflow-hidden w-full">
-                              {selectedTrack.name}
+                              {truncateText(selectedTrack.name)}
                             </h2>
                             <h2 className="text-end overflow-hidden min-w-max font-semibold italic">
-                              {selectedTrack.artists
-                                .map((artist) => artist.name)
-                                .join(", ")}
+                              {truncateText(
+                                selectedTrack.artists
+                                  .map((artist) => artist.name)
+                                  .join(", ")
+                              )}
                             </h2>
                           </div>
                         </div>
@@ -163,10 +158,64 @@ const TopTenPlayer = () => {
                         customAdditionalControls={[]}
                         customIcons={{
                           play: (
-                            <FaPlay className="mt-2 mx-auto text-[#990000] z-10 w-5 h-5" />
+                            <div className="flex mx-auto gap-4 justify-center absolute">
+                              <button
+                                key="prev"
+                                onClick={() =>
+                                  setSelectedTrackIndex((prevIndex) =>
+                                    prevIndex > 0
+                                      ? prevIndex - 1
+                                      : recommendedTracks.length - 1
+                                  )
+                                }
+                              >
+                                <FaBackward className="  text-[#990000] z-10 w-5 h-5" />
+                              </button>
+                              <FaPlay className=" text-[#990000] z-10 w-5 h-5" />
+
+                              <button
+                                key="next"
+                                onClick={() =>
+                                  setSelectedTrackIndex((prevIndex) =>
+                                    prevIndex < recommendedTracks.length - 1
+                                      ? prevIndex + 1
+                                      : 0
+                                  )
+                                }
+                              >
+                                <FaForward className=" text-[#990000] z-10 w-5 h-5" />
+                              </button>
+                            </div>
                           ),
                           pause: (
-                            <FaPause className="mt-2 mx-auto text-[#990000] z-10 w-5 h-5" />
+                            <div className="flex mx-auto gap-4 justify-center absolute">
+                              <button
+                                key="prev"
+                                onClick={() =>
+                                  setSelectedTrackIndex((prevIndex) =>
+                                    prevIndex > 0
+                                      ? prevIndex - 1
+                                      : recommendedTracks.length - 1
+                                  )
+                                }
+                              >
+                                <FaBackward className="  text-[#990000] z-10 w-5 h-5" />
+                              </button>
+                              <FaPause className=" text-[#990000] z-10 w-5 h-5" />
+
+                              <button
+                                key="next"
+                                onClick={() =>
+                                  setSelectedTrackIndex((prevIndex) =>
+                                    prevIndex < recommendedTracks.length - 1
+                                      ? prevIndex + 1
+                                      : 0
+                                  )
+                                }
+                              >
+                                <FaForward className=" text-[#990000] z-10 w-5 h-5" />
+                              </button>
+                            </div>
                           ),
                         }}
                         customVolumeControls={[]}
@@ -189,58 +238,15 @@ const TopTenPlayer = () => {
                     GB63913710211241047
                   </h2>
                   <div className="flex justify-center items-center mt-3">
-                    <div className="h-[268px] w-[268px] object-cover rounded-2xl overflow-hidden flex">
+                    <div className="h-[268px] w-[268px] object-cover rounded-2xl overflow-hidden bg-slate-400 flex">
                       {selectedTrack.album.images.length > 0 && (
-                        <div
-                          id="parent"
-                          className="w-[300px] h-[300px] relative"
-                          onMouseEnter={() => setShowControls(true)}
-                          onMouseLeave={() => setShowControls(false)}
-                        >
-                          <Image
-                            width={300}
-                            height={300}
-                            className={`w-full h-full absolute -z-10 ${
-                              !showControls
-                                ? ""
-                                : " blur transition-all duration-500"
-                            }`}
-                            src={selectedTrack.album.images[0].url}
-                            alt={selectedTrack.name}
-                          />
-                          <div
-                            id="child"
-                            className={`flex z-10 h-full justify-between  text-white p-4 text-2xl shadow-black shadow-xl w-full ${
-                              showControls ? "" : "hidden"
-                            }`}
-                          >
-                            <button
-                              key="prev"
-                              onClick={() =>
-                                setSelectedTrackIndex((prevIndex) =>
-                                  prevIndex > 0
-                                    ? prevIndex - 1
-                                    : recommendedTracks.length - 1
-                                )
-                              }
-                            >
-                              <FaBackward />
-                            </button>
-
-                            <button
-                              key="next"
-                              onClick={() =>
-                                setSelectedTrackIndex((prevIndex) =>
-                                  prevIndex < recommendedTracks.length - 1
-                                    ? prevIndex + 1
-                                    : 0
-                                )
-                              }
-                            >
-                              <FaForward />
-                            </button>
-                          </div>
-                        </div>
+                        <Image
+                          width={300}
+                          height={300}
+                          className="w-full h-full"
+                          src={selectedTrack.album.images[0].url}
+                          alt={selectedTrack.name}
+                        />
                       )}
                     </div>
                   </div>
