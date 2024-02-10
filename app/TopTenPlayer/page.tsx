@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { FaBackward } from "react-icons/fa6";
 const token =
+  // this auth acess key will expire soon
   "BQBjG-SwiUEf9ySiYe-K-OAxC0iqo-U5x2ArigX2okQX6uLxqCd8wYIlowUEpK3KjG0zsW_uVlWquCzey265ub-k0J9WZ0yoTAmz-j2sMCSK1atcQv9SEKrE4gNNA-RGfnGTwlyili8mt6kuKIi750k9B0jae2B4HO_dtJqOatMX6RZvqBwPhsRfUiySViroZpUpccUCqtN5WjjQvWV4eKew8_Qyy3yfmyHQ-Du82PJLjWIuylB1I8UbfMh8_cMfZWgETi0Gz-BNfrqOL6AxddPK";
 
 async function fetchWebApi(endpoint: string, method: string, body?: any) {
